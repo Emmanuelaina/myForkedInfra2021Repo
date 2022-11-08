@@ -2,30 +2,29 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('checkout') {
             steps {
-                checkout scm
-            }
-        }
-    
-        stage ("terraform init") {
-            steps {
-                sh ("terraform init -reconfigure") 
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/Emmanuelaina/myForkedInfra2021Repo']]])
             }
         }
         
-        stage ("plan") {
+        stage("terraform init") {
             steps {
-                sh ('terraform plan') 
+                sh ("terraform init -reconfigure")
             }
         }
-
-        stage (" Action") {
+        
+        stage("plan") {
             steps {
-                echo "Terraform action is --> ${action}"
-                sh ('terraform ${action} --auto-approve') 
-           }
+                sh ("terraform plan")
+            }
+        }
+        
+        stage ("action") {
+            steps {
+                echo "Terraform action is ---> ${action}"
+                sh ("terraform ${action} --auto-approve")
+            }
         }
     }
 }
-    
